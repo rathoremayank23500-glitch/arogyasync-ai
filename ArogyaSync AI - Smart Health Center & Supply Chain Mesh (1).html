@@ -1,0 +1,1269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ArogyaSync AI - Smart Health Center & Supply Chain Mesh</title>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Inter', sans-serif; }
+    .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
+    .custom-scrollbar::-webkit-scrollbar-track { background: #f1f5f9; }
+    .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-900 min-h-screen flex flex-col antialiased">
+
+  <!-- Top Navbar -->
+  <header class="bg-white border-b border-slate-200 sticky top-0 z-40">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-16">
+        
+        <!-- Brand & Context -->
+        <div class="flex items-center space-x-3">
+          <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-emerald-600 to-teal-500 flex items-center justify-center text-white shadow-md shadow-emerald-500/20">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+            </svg>
+          </div>
+          <div>
+            <div class="flex items-center space-x-2">
+              <span class="font-bold text-lg tracking-tight text-slate-900">ArogyaSync<span class="text-emerald-600">AI</span></span>
+              <span class="bg-emerald-50 text-emerald-700 text-xs px-2 py-0.5 rounded-full font-medium border border-emerald-200">v2.4 Edge</span>
+            </div>
+            <p class="text-xs text-slate-500 font-medium">PHC & CHC Operational Mesh | Build with AI</p>
+          </div>
+        </div>
+
+        <!-- Center: Facility Selector & Status -->
+        <div class="hidden md:flex items-center space-x-3">
+          <div class="flex items-center bg-slate-100 rounded-lg px-3 py-1.5 border border-slate-200 text-sm">
+            <span class="text-slate-500 mr-2">Facility:</span>
+            <select id="facilitySelect" class="bg-transparent font-semibold text-slate-800 focus:outline-none cursor-pointer">
+              <option value="phc_ghatigaon">PHC Ghatigaon (Gwalior)</option>
+              <option value="chc_morar">CHC Morar (Community Centre)</option>
+              <option value="phc_dabra">PHC Dabra Sub-Centre</option>
+            </select>
+          </div>
+          
+          <div class="flex items-center space-x-1.5 px-3 py-1 bg-emerald-50 text-emerald-700 rounded-full text-xs font-semibold border border-emerald-200">
+            <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+            <span>Edge Mesh Synced (Offline-First)</span>
+          </div>
+        </div>
+
+        <!-- Right Action Controls -->
+        <div class="flex items-center space-x-3">
+          <button id="btnQuickReport" class="hidden sm:inline-flex items-center px-3 py-1.5 border border-slate-300 text-xs font-medium rounded-lg text-slate-700 bg-white hover:bg-slate-50 transition">
+            <svg class="w-4 h-4 mr-1.5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+            </svg>
+            CMO Daily Digest
+          </button>
+
+          <button id="btnSyncNow" class="inline-flex items-center px-3.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold rounded-lg shadow-sm transition">
+            <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+            </svg>
+            Sync Edge Node
+          </button>
+        </div>
+
+      </div>
+    </div>
+  </header>
+
+  <!-- Navigation Tabs -->
+  <div class="bg-white border-b border-slate-200">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <nav class="flex space-x-6 overflow-x-auto custom-scrollbar" aria-label="Tabs">
+        <button id="tab-inventory" class="tab-btn py-3.5 px-1 border-b-2 border-emerald-600 font-semibold text-sm text-emerald-600 flex items-center space-x-2 whitespace-nowrap">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
+          </svg>
+          <span>1. Predictive Medicine Inventory</span>
+          <span id="badgeStockWarning" class="bg-rose-100 text-rose-700 text-xs px-2 py-0.5 rounded-full font-bold ml-1">2 Critical</span>
+        </button>
+
+        <button id="tab-triage" class="tab-btn py-3.5 px-1 border-b-2 border-transparent font-medium text-sm text-slate-500 hover:text-slate-700 hover:border-slate-300 flex items-center space-x-2 whitespace-nowrap">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+          </svg>
+          <span>2. Vernacular Triage & Footfall</span>
+          <span class="bg-amber-100 text-amber-700 text-xs px-2 py-0.5 rounded-full font-bold ml-1">18 in OPD</span>
+        </button>
+
+        <button id="tab-beds" class="tab-btn py-3.5 px-1 border-b-2 border-transparent font-medium text-sm text-slate-500 hover:text-slate-700 hover:border-slate-300 flex items-center space-x-2 whitespace-nowrap">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+          </svg>
+          <span>3. Bed Telemetry & Referral Mesh</span>
+          <span class="bg-blue-100 text-blue-700 text-xs px-2 py-0.5 rounded-full font-bold ml-1">4 Available</span>
+        </button>
+
+        <button id="tab-staff" class="tab-btn py-3.5 px-1 border-b-2 border-transparent font-medium text-sm text-slate-500 hover:text-slate-700 hover:border-slate-300 flex items-center space-x-2 whitespace-nowrap">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
+          </svg>
+          <span>4. Doctor Attendance & Tele-Fallback</span>
+          <span class="bg-purple-100 text-purple-700 text-xs px-2 py-0.5 rounded-full font-bold ml-1">1 On Leave (Tele-Bridged)</span>
+        </button>
+      </nav>
+    </div>
+  </div>
+
+  <!-- Toast Container -->
+  <div id="toastContainer" class="fixed bottom-5 right-5 z-50 flex flex-col space-y-2 pointer-events-none"></div>
+
+  <!-- Main Content Area -->
+  <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+
+    <!-- KPI Summary Row (Common across tabs) -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+      <div class="bg-white rounded-xl p-4 border border-slate-200 shadow-sm">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Critical Stock-Outs</span>
+          <span class="p-1.5 rounded-lg bg-rose-50 text-rose-600">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+          </span>
+        </div>
+        <div class="mt-2 flex items-baseline">
+          <span id="kpiCriticalStock" class="text-2xl font-bold text-slate-900">2 Items</span>
+          <span class="ml-2 text-xs font-medium text-rose-600">&lt; 48h runway</span>
+        </div>
+        <p class="text-xs text-slate-400 mt-1">Anti-snake venom & Ciprofloxacin</p>
+      </div>
+
+      <div class="bg-white rounded-xl p-4 border border-slate-200 shadow-sm">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider">OPD Wait Time</span>
+          <span class="p-1.5 rounded-lg bg-emerald-50 text-emerald-600">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+          </span>
+        </div>
+        <div class="mt-2 flex items-baseline">
+          <span class="text-2xl font-bold text-slate-900">14 Mins</span>
+          <span class="ml-2 text-xs font-medium text-emerald-600">↓ 68% vs Manual</span>
+        </div>
+        <p class="text-xs text-slate-400 mt-1">Vernacular Smart Token Queue</p>
+      </div>
+
+      <div class="bg-white rounded-xl p-4 border border-slate-200 shadow-sm">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Bed Occupancy</span>
+          <span class="p-1.5 rounded-lg bg-blue-50 text-blue-600">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
+          </span>
+        </div>
+        <div class="mt-2 flex items-baseline">
+          <span id="kpiBedOccupancy" class="text-2xl font-bold text-slate-900">6 / 10 Beds</span>
+          <span class="ml-2 text-xs font-medium text-blue-600">60% Load</span>
+        </div>
+        <p class="text-xs text-slate-400 mt-1">2 Oxygen beds vacant</p>
+      </div>
+
+      <div class="bg-white rounded-xl p-4 border border-slate-200 shadow-sm">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Doctor Coverage</span>
+          <span class="p-1.5 rounded-lg bg-purple-50 text-purple-600">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
+          </span>
+        </div>
+        <div class="mt-2 flex items-baseline">
+          <span class="text-2xl font-bold text-slate-900">100% Active</span>
+          <span class="ml-2 text-xs font-medium text-purple-600">1 Tele-Bridged</span>
+        </div>
+        <p class="text-xs text-slate-400 mt-1">Gwalior District Tele-Pool</p>
+      </div>
+    </div>
+
+    <!-- TAB 1: PREDICTIVE MEDICINE INVENTORY -->
+    <div id="view-inventory" class="tab-view space-y-6">
+      
+      <!-- Action Toolbar -->
+      <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-white p-4 rounded-xl border border-slate-200">
+        <div>
+          <h2 class="text-base font-bold text-slate-900">Essential Drug Supply Chain & Predictive Run-Rate</h2>
+          <p class="text-xs text-slate-500">Vertex AI time-series forecast trained on seasonal epidemiologic spikes (Dengue, Typhoid, Viral Fevers).</p>
+        </div>
+        <div class="flex items-center space-x-2">
+          <button id="btnScanRegister" class="inline-flex items-center px-3 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold rounded-lg shadow-sm transition">
+            <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path></svg>
+            Gemini Multimodal OCR Scan
+          </button>
+          <button id="btnTriggerTransfer" class="inline-flex items-center px-3 py-2 bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold rounded-lg shadow-sm transition">
+            <svg class="w-4 h-4 mr-1.5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path></svg>
+            Auto-Rebalance with CHC Morar
+          </button>
+        </div>
+      </div>
+
+      <!-- Inventory Grid & Chart -->
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        
+        <!-- Inventory Table (2 Columns) -->
+        <div class="lg:col-span-2 bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden flex flex-col">
+          <div class="p-4 border-b border-slate-100 flex items-center justify-between">
+            <div class="flex items-center space-x-2">
+              <span class="font-bold text-sm text-slate-800">PHC Pharmacy Stock Registry</span>
+              <span class="text-xs bg-slate-100 text-slate-600 px-2 py-0.5 rounded font-mono" id="stockCountText">7 Tracked Drugs</span>
+            </div>
+            <div class="flex items-center space-x-2">
+              <label class="text-xs text-slate-500 font-medium">Filter:</label>
+              <select id="stockFilter" class="text-xs border border-slate-200 rounded px-2 py-1 bg-slate-50 focus:outline-none">
+                <option value="all">All Levels</option>
+                <option value="critical">Critical Only (&lt; 3 Days)</option>
+                <option value="warning">Warning (&lt; 7 Days)</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="overflow-x-auto flex-1 custom-scrollbar">
+            <table class="w-full text-left border-collapse text-xs">
+              <thead>
+                <tr class="bg-slate-50 border-b border-slate-200 text-slate-500 font-semibold uppercase tracking-wider">
+                  <th class="py-3 px-4">Medicine & Formulation</th>
+                  <th class="py-3 px-3">Current Stock</th>
+                  <th class="py-3 px-3">Daily Burn</th>
+                  <th class="py-3 px-3">AI Predicted Runway</th>
+                  <th class="py-3 px-3">Status</th>
+                  <th class="py-3 px-4 text-right">Action</th>
+                </tr>
+              </thead>
+              <tbody id="inventoryTableBody" class="divide-y divide-slate-100 font-medium text-slate-700">
+                <!-- Dynamically populated via JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Time Series Forecast Chart -->
+        <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-4 flex flex-col">
+          <div class="flex items-center justify-between mb-3">
+            <div>
+              <h3 class="text-sm font-bold text-slate-800">Depletion Velocity Forecast</h3>
+              <p class="text-xs text-slate-400">Comparing normal consumption vs dengue surge</p>
+            </div>
+            <span class="text-xs px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 font-bold">Paracetamol 500mg</span>
+          </div>
+          <div class="relative h-64 w-full">
+            <canvas id="inventoryChart"></canvas>
+          </div>
+          <div class="mt-4 pt-3 border-t border-slate-100 bg-amber-50/70 p-3 rounded-lg border border-amber-200">
+            <div class="flex items-start space-x-2">
+              <svg class="w-4 h-4 text-amber-600 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+              <p class="text-xs text-amber-900 leading-relaxed">
+                <strong>Intra-District Intelligence:</strong> CHC Morar (14 km away) carries a 42-day surplus (8,200 tablets). Transfer request automatically primed in e-Aushadhi gateway.
+              </p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- TAB 2: VERNACULAR TRIAGE & OPD FOOTFALL -->
+    <div id="view-triage" class="tab-view hidden space-y-6">
+      
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        
+        <!-- Vernacular Triage Input Simulator (Left Column) -->
+        <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-5 flex flex-col">
+          <div class="flex items-center space-x-2 mb-3">
+            <div class="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 100-6 3 3 0 000 6z"></path></svg>
+            </div>
+            <div>
+              <h3 class="font-bold text-sm text-slate-900">Vernacular Patient Intake (ASHA / Kiosk)</h3>
+              <p class="text-xs text-slate-500">Supports Hindi, Bundelkhandi, Hinglish & English</p>
+            </div>
+          </div>
+
+          <div class="space-y-3.5">
+            <div>
+              <label class="block text-xs font-semibold text-slate-600 mb-1">Patient Name & Age</label>
+              <div class="grid grid-cols-3 gap-2">
+                <input id="inputPatientName" type="text" value="Radha Bai" class="col-span-2 text-xs border border-slate-300 rounded-lg px-3 py-2 focus:ring-1 focus:ring-emerald-500 focus:outline-none">
+                <input id="inputPatientAge" type="text" value="48 F" class="text-xs border border-slate-300 rounded-lg px-3 py-2 focus:ring-1 focus:ring-emerald-500 focus:outline-none text-center">
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-xs font-semibold text-slate-600 mb-1">Voice / Text Complaint (Vernacular)</label>
+              <textarea id="inputSymptoms" rows="3" class="w-full text-xs border border-slate-300 rounded-lg p-2.5 focus:ring-1 focus:ring-emerald-500 focus:outline-none text-slate-800" placeholder="e.g. 3 din se tez bukhar hai, saans lene me takleef ho rahi hai..."></textarea>
+              <div class="mt-1 flex items-center justify-between">
+                <span class="text-[11px] text-slate-400">Sample phrases:</span>
+                <div class="flex space-x-1.5">
+                  <button id="btnSampleCritical" class="text-[11px] text-rose-600 hover:underline">Severe Chest Pain</button>
+                  <span class="text-slate-300">|</span>
+                  <button id="btnSampleFever" class="text-[11px] text-amber-600 hover:underline">High Fever</button>
+                  <span class="text-slate-300">|</span>
+                  <button id="btnSampleFollowup" class="text-[11px] text-emerald-600 hover:underline">Routine BP</button>
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-xs font-semibold text-slate-600 mb-1">Quick Vitals (Optional)</label>
+              <div class="grid grid-cols-2 gap-2 text-xs">
+                <input id="inputVitalsBP" type="text" placeholder="BP: 140/90" value="135/88" class="border border-slate-300 rounded-lg px-2.5 py-1.5 focus:outline-none">
+                <input id="inputVitalsSpO2" type="text" placeholder="SpO2: 96%" value="94%" class="border border-slate-300 rounded-lg px-2.5 py-1.5 focus:outline-none">
+              </div>
+            </div>
+
+            <button id="btnRunTriage" class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg font-semibold text-xs shadow-sm flex items-center justify-center space-x-1.5 transition">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+              <span>Gemini AI Triage & Issue Token</span>
+            </button>
+          </div>
+
+          <!-- Triage Explanation Output Card -->
+          <div id="triageResultBox" class="mt-4 p-3 rounded-lg border border-slate-200 bg-slate-50 text-xs hidden">
+            <div class="flex items-center justify-between mb-1.5">
+              <span id="triageBadge" class="px-2 py-0.5 rounded text-[11px] font-bold"></span>
+              <span id="tokenNumberDisplay" class="font-mono font-bold text-slate-800"></span>
+            </div>
+            <p id="triageReasoning" class="text-slate-600 text-[11px] leading-relaxed"></p>
+          </div>
+        </div>
+
+        <!-- Live OPD Queue Board (Right 2 Columns) -->
+        <div class="lg:col-span-2 space-y-4">
+          
+          <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-4">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-3 border-b border-slate-100 gap-2">
+              <div>
+                <h3 class="text-sm font-bold text-slate-900">Real-Time OPD Smart Queue</h3>
+                <p class="text-xs text-slate-500">Autonomous dynamic reprioritization based on acute symptom severity</p>
+              </div>
+              <div class="flex items-center space-x-2">
+                <span class="inline-flex items-center px-2 py-0.5 rounded text-xs bg-rose-100 text-rose-800 font-semibold">Priority 1: Emergency</span>
+                <span class="inline-flex items-center px-2 py-0.5 rounded text-xs bg-amber-100 text-amber-800 font-semibold">Priority 2: Acute</span>
+                <span class="inline-flex items-center px-2 py-0.5 rounded text-xs bg-emerald-100 text-emerald-800 font-semibold">Priority 3: Routine</span>
+              </div>
+            </div>
+
+            <div class="overflow-x-auto custom-scrollbar mt-3">
+              <table class="w-full text-left border-collapse text-xs">
+                <thead>
+                  <tr class="bg-slate-50 border-b border-slate-200 text-slate-500 font-semibold uppercase tracking-wider">
+                    <th class="py-2.5 px-3">Token</th>
+                    <th class="py-2.5 px-3">Patient</th>
+                    <th class="py-2.5 px-3">Symptom Summary</th>
+                    <th class="py-2.5 px-3">Acuity</th>
+                    <th class="py-2.5 px-3">Allocated Doctor</th>
+                    <th class="py-2.5 px-3">Wait</th>
+                    <th class="py-2.5 px-3 text-right">Action</th>
+                  </tr>
+                </thead>
+                <tbody id="queueTableBody" class="divide-y divide-slate-100 font-medium text-slate-700">
+                  <!-- Populated dynamically via JS -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Hourly Footfall Density Prediction -->
+          <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-4">
+            <div class="flex items-center justify-between mb-2">
+              <h4 class="text-xs font-bold text-slate-800 uppercase tracking-wider">Hourly Footfall vs Capacity Curve</h4>
+              <span class="text-xs text-emerald-600 font-semibold">Peak: 10:00 AM - 12:30 PM</span>
+            </div>
+            <div class="relative h-44 w-full">
+              <canvas id="footfallChart"></canvas>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- TAB 3: BED TELEMETRY & REFERRAL MESH -->
+    <div id="view-beds" class="tab-view hidden space-y-6">
+      
+      <!-- Bed Status Cards & Controls -->
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        
+        <!-- Left: Ward Bed Grid (2 Columns) -->
+        <div class="lg:col-span-2 bg-white rounded-xl border border-slate-200 shadow-sm p-5">
+          <div class="flex items-center justify-between mb-4 pb-3 border-b border-slate-100">
+            <div>
+              <h3 class="font-bold text-sm text-slate-900">PHC Ghatigaon In-Patient Ward (10-Bed Capacity)</h3>
+              <p class="text-xs text-slate-500">Click any bed to update telemetry, view patient card, or trigger discharge</p>
+            </div>
+            <div class="flex items-center space-x-3 text-xs">
+              <span class="flex items-center"><span class="w-3 h-3 rounded bg-emerald-500 mr-1.5"></span> Available</span>
+              <span class="flex items-center"><span class="w-3 h-3 rounded bg-rose-500 mr-1.5"></span> Occupied</span>
+              <span class="flex items-center"><span class="w-3 h-3 rounded bg-blue-500 mr-1.5"></span> Oxygen Support</span>
+            </div>
+          </div>
+
+          <div id="bedsGrid" class="grid grid-cols-2 sm:grid-cols-5 gap-3">
+            <!-- 10 Bed Cards populated dynamically -->
+          </div>
+
+          <div class="mt-6 pt-4 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
+            <span>Discharge Predictor: 2 patients expected ready for discharge in &lt; 3 hours.</span>
+            <span class="font-semibold text-slate-700">Ward Nurse in Charge: Sister Sunita (Ext 104)</span>
+          </div>
+        </div>
+
+        <!-- Right: Inter-Facility Emergency Referral Router -->
+        <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-5 flex flex-col justify-between">
+          <div>
+            <div class="flex items-center space-x-2 mb-3">
+              <div class="w-8 h-8 rounded-lg bg-rose-100 text-rose-600 flex items-center justify-center">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+              </div>
+              <div>
+                <h3 class="font-bold text-sm text-slate-900">Smart Emergency Referral Dispatch</h3>
+                <p class="text-xs text-slate-500">Avoid blind transfers with confirmed destination beds</p>
+              </div>
+            </div>
+
+            <div class="space-y-3 text-xs">
+              <div>
+                <label class="block font-semibold text-slate-700 mb-1">Select Patient Needing Referral</label>
+                <select id="referralPatientSelect" class="w-full border border-slate-300 rounded-lg p-2 bg-slate-50 focus:outline-none">
+                  <option value="p1">Bed #04 - Suresh Verma (Acute Respiratory Distress)</option>
+                  <option value="p2">Token #A-02 - Kamlesh (Post-trauma head laceration)</option>
+                </select>
+              </div>
+
+              <div>
+                <label class="block font-semibold text-slate-700 mb-1">Live Inter-Facility Bed Telemetry</label>
+                <div class="space-y-2">
+                  <div class="p-2.5 rounded-lg border border-emerald-300 bg-emerald-50/60 flex items-center justify-between">
+                    <div>
+                      <div class="font-bold text-slate-900">CHC Morar</div>
+                      <div class="text-[11px] text-slate-500">14 km | 22 min transit</div>
+                    </div>
+                    <div class="text-right">
+                      <span class="text-xs font-bold text-emerald-700">8 Vacant (3 ICU)</span>
+                      <div class="text-[10px] text-emerald-600">Optimal Target</div>
+                    </div>
+                  </div>
+
+                  <div class="p-2.5 rounded-lg border border-slate-200 bg-slate-50 flex items-center justify-between">
+                    <div>
+                      <div class="font-bold text-slate-900">District Hospital Gwalior</div>
+                      <div class="text-[11px] text-slate-500">28 km | 45 min transit</div>
+                    </div>
+                    <div class="text-right">
+                      <span class="text-xs font-bold text-amber-600">2 Vacant (Critical Load)</span>
+                      <div class="text-[10px] text-slate-400">High Congestion</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div>
+                <label class="block font-semibold text-slate-700 mb-1">108 Ambulance Dispatch Status</label>
+                <div class="flex items-center justify-between p-2 rounded-lg bg-slate-100 text-[11px]">
+                  <span class="font-mono text-slate-700">Ambulance MP-07-GA-1102</span>
+                  <span class="text-emerald-700 font-bold">Staged at Ghatigaon (5m ETA)</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <button id="btnDispatchReferral" class="mt-4 w-full py-2.5 bg-rose-600 hover:bg-rose-700 text-white rounded-lg font-semibold text-xs shadow-sm flex items-center justify-center space-x-1.5 transition">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 5l7 7-7 7M5 5l7 7-7 7"></path></svg>
+            <span>Lock CHC Bed & Transmit Clinical Dossier</span>
+          </button>
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- TAB 4: DOCTOR ATTENDANCE & TELE-FALLBACK -->
+    <div id="view-staff" class="tab-view hidden space-y-6">
+      
+      <!-- Staff Overview & Telemedicine Fallback -->
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        
+        <!-- Left: Doctor Roster & Attendance (2 Columns) -->
+        <div class="lg:col-span-2 bg-white rounded-xl border border-slate-200 shadow-sm p-5">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-4 pb-3 border-b border-slate-100 gap-2">
+            <div>
+              <h3 class="font-bold text-sm text-slate-900">Medical Staff Roster & Geo-Fenced Telemetry</h3>
+              <p class="text-xs text-slate-500">Autonomous tele-consultation fallback triggered when doctor is summoned off-site</p>
+            </div>
+            <button id="btnSimulateAbsence" class="inline-flex items-center px-3 py-1.5 bg-amber-500 hover:bg-amber-600 text-white text-xs font-semibold rounded-lg shadow-sm transition">
+              <svg class="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+              Simulate Emergency Court Summons
+            </button>
+          </div>
+
+          <div class="space-y-3">
+            <div id="doctorCard1" class="p-3.5 rounded-xl border border-slate-200 bg-white flex flex-col sm:flex-row sm:items-center justify-between gap-3 transition">
+              <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-full bg-emerald-100 text-emerald-800 font-bold flex items-center justify-center text-sm">
+                  Dr.S
+                </div>
+                <div>
+                  <div class="flex items-center space-x-2">
+                    <span class="font-bold text-sm text-slate-900">Dr. Saurabh Mishra, MBBS</span>
+                    <span class="text-xs bg-slate-100 text-slate-600 px-2 py-0.5 rounded font-medium">Medical Officer (MO)</span>
+                  </div>
+                  <div class="text-xs text-slate-500 mt-0.5">Specialization: General Medicine & Emergency Care</div>
+                </div>
+              </div>
+              <div class="flex items-center space-x-3 text-xs">
+                <div class="text-right">
+                  <span id="docStatusBadge1" class="px-2.5 py-1 rounded-full font-bold bg-emerald-100 text-emerald-800">Present (On-Site OPD)</span>
+                  <div class="text-[11px] text-slate-400 mt-0.5">Biometric Geo-Checkin 08:45 AM</div>
+                </div>
+              </div>
+            </div>
+
+            <div id="doctorCard2" class="p-3.5 rounded-xl border border-purple-200 bg-purple-50/40 flex flex-col sm:flex-row sm:items-center justify-between gap-3 transition">
+              <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-full bg-purple-100 text-purple-800 font-bold flex items-center justify-center text-sm">
+                  Dr.P
+                </div>
+                <div>
+                  <div class="flex items-center space-x-2">
+                    <span class="font-bold text-sm text-slate-900">Dr. Priya Sharma, DGO</span>
+                    <span class="text-xs bg-purple-100 text-purple-800 px-2 py-0.5 rounded font-medium">Visiting Obstetrician</span>
+                  </div>
+                  <div class="text-xs text-slate-500 mt-0.5">Specialization: Maternal & Neonatal Health</div>
+                </div>
+              </div>
+              <div class="flex items-center space-x-3 text-xs">
+                <div class="text-right">
+                  <span class="px-2.5 py-1 rounded-full font-bold bg-purple-100 text-purple-800">Tele-Pool Connected</span>
+                  <div class="text-[11px] text-purple-600 mt-0.5">Handling Antenatal Video Calls (Gwalior Hub)</div>
+                </div>
+              </div>
+            </div>
+
+            <div id="doctorCard3" class="p-3.5 rounded-xl border border-slate-200 bg-white flex flex-col sm:flex-row sm:items-center justify-between gap-3 transition">
+              <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-full bg-blue-100 text-blue-800 font-bold flex items-center justify-center text-sm">
+                  Dr.A
+                </div>
+                <div>
+                  <div class="flex items-center space-x-2">
+                    <span class="font-bold text-sm text-slate-900">Dr. Amit Verma, MD</span>
+                    <span class="text-xs bg-slate-100 text-slate-600 px-2 py-0.5 rounded font-medium">Pediatric Specialist</span>
+                  </div>
+                  <div class="text-xs text-slate-500 mt-0.5">CHC Morar Roving Consultant</div>
+                </div>
+              </div>
+              <div class="flex items-center space-x-3 text-xs">
+                <div class="text-right">
+                  <span class="px-2.5 py-1 rounded-full font-bold bg-blue-100 text-blue-800">Scheduled: 02:00 PM</span>
+                  <div class="text-[11px] text-slate-400 mt-0.5">Weekly Immunization Clinic</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: Telemedicine Bridge Interface -->
+        <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-5 flex flex-col justify-between">
+          <div>
+            <div class="flex items-center space-x-2 mb-3">
+              <div class="w-8 h-8 rounded-lg bg-purple-100 text-purple-600 flex items-center justify-center">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+              </div>
+              <div>
+                <h3 class="font-bold text-sm text-slate-900">District Tele-Health Bridge</h3>
+                <p class="text-xs text-slate-500">eSanjeevani 2.0 / ABDM Automated Relay</p>
+              </div>
+            </div>
+
+            <div class="space-y-3 text-xs">
+              <div class="bg-slate-900 rounded-lg p-3 text-white">
+                <div class="flex items-center justify-between text-[11px] text-slate-400 mb-2">
+                  <span>LIVE ENCOUNTER FEED</span>
+                  <span class="text-emerald-400 flex items-center"><span class="w-1.5 h-1.5 rounded-full bg-emerald-400 mr-1 animate-pulse"></span> Encrypted WebRTC</span>
+                </div>
+                <div class="aspect-video bg-slate-800 rounded flex flex-col items-center justify-center text-slate-400 text-center p-3">
+                  <svg class="w-8 h-8 text-slate-500 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+                  <span class="font-medium text-slate-300 text-xs">Tele-Doctor: Dr. Sunita Rao (Hub #3)</span>
+                  <span class="text-[10px] text-slate-400">Consulting: Meena (Token #C-04)</span>
+                </div>
+              </div>
+
+              <div class="p-2.5 rounded-lg bg-purple-50 border border-purple-200">
+                <span class="font-bold text-purple-900 block mb-0.5">Tele-Consultation Queue Status</span>
+                <span class="text-purple-700 text-[11px]">3 rural patients routed to district specialists today without leaving PHC Ghatigaon.</span>
+              </div>
+            </div>
+          </div>
+
+          <button id="btnLaunchTeleSession" class="mt-4 w-full py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg font-semibold text-xs shadow-sm transition">
+            Connect Next In-Queue Patient
+          </button>
+        </div>
+
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- In-Page Modal: Inter-Facility Transfer Simulator -->
+  <div id="modalTransfer" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-slate-100 space-y-4">
+      <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+        <div class="flex items-center space-x-2">
+          <div class="p-2 bg-emerald-100 text-emerald-700 rounded-lg">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path></svg>
+          </div>
+          <div>
+            <h3 class="font-bold text-base text-slate-900">Inter-Facility Supply Rebalance</h3>
+            <p class="text-xs text-slate-500">Autonomous transfer from nearest surplus facility</p>
+          </div>
+        </div>
+        <button id="btnCloseModalTransfer" class="text-slate-400 hover:text-slate-600 p-1">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+        </button>
+      </div>
+
+      <div class="space-y-3 text-xs">
+        <div class="p-3 rounded-lg bg-rose-50 border border-rose-200">
+          <div class="font-bold text-rose-800">Deficit Alert: Anti-Snake Venom (Lyophilized)</div>
+          <div class="text-rose-600 mt-0.5">Current Stock: 2 vials | Critical Buffer: 15 vials | Stock-out in: 1.2 days</div>
+        </div>
+
+        <div class="p-3 rounded-lg bg-emerald-50 border border-emerald-200 space-y-1">
+          <div class="flex items-center justify-between">
+            <span class="font-bold text-emerald-900">Recommended Source: CHC Morar Warehouse</span>
+            <span class="text-xs bg-emerald-200 text-emerald-800 px-2 py-0.5 rounded font-bold">14 km away</span>
+          </div>
+          <div class="text-emerald-700">Available Surplus: 45 vials (Runway: 64 days). Can release 15 vials without risk.</div>
+          <div class="text-[11px] text-emerald-600">Transit Carrier: Routine District Vaccine Dispatch Van (Leaving 11:30 AM)</div>
+        </div>
+
+        <div>
+          <label class="block font-semibold text-slate-700 mb-1">Transfer Quantity (Vials)</label>
+          <input type="number" id="inputTransferQty" value="15" min="1" max="25" class="w-full border border-slate-300 rounded-lg p-2 text-xs focus:ring-1 focus:ring-emerald-500 focus:outline-none">
+        </div>
+      </div>
+
+      <div class="flex items-center justify-end space-x-2 pt-2 border-t border-slate-100">
+        <button id="btnCancelTransfer" class="px-4 py-2 border border-slate-300 rounded-lg text-xs font-semibold text-slate-700 hover:bg-slate-50 transition">Cancel</button>
+        <button id="btnConfirmTransfer" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-semibold shadow-sm transition">Authorize & Sign Transfer</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- In-Page Modal: Gemini Multimodal OCR Register Scanner -->
+  <div id="modalOcr" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-slate-100 space-y-4">
+      <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+        <div class="flex items-center space-x-2">
+          <div class="p-2 bg-indigo-100 text-indigo-700 rounded-lg">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path></svg>
+          </div>
+          <div>
+            <h3 class="font-bold text-base text-slate-900">Gemini 1.5 Flash Register Extraction</h3>
+            <p class="text-xs text-slate-500">Converts handwritten pharmacy registers to structured stock JSON</p>
+          </div>
+        </div>
+        <button id="btnCloseModalOcr" class="text-slate-400 hover:text-slate-600 p-1">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+        </button>
+      </div>
+
+      <div class="space-y-3 text-xs">
+        <div class="border-2 border-dashed border-indigo-200 bg-indigo-50/50 rounded-xl p-4 text-center">
+          <svg class="w-8 h-8 mx-auto text-indigo-500 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+          <div class="font-semibold text-indigo-900">Handwritten Daily Stock Register Page #42</div>
+          <div class="text-[11px] text-indigo-600 mt-1">Image recognized: Hindi/English bilingual ledger entries</div>
+        </div>
+
+        <div class="bg-slate-900 rounded-lg p-3 text-emerald-400 font-mono text-[11px] space-y-1">
+          <div class="text-slate-400 font-bold mb-1">// Gemini Structured JSON Output:</div>
+          <div>{</div>
+          <div class="pl-3">"drug": "Amoxicillin 500mg", "batch": "AM-9082", "closing_stock": 450,</div>
+          <div class="pl-3">"drug": "Oral Rehydration Salts (ORS)", "closing_stock": 800,</div>
+          <div class="pl-3">"drug": "Metformin 500mg", "closing_stock": 620</div>
+          <div>}</div>
+        </div>
+      </div>
+
+      <div class="flex items-center justify-end space-x-2 pt-2 border-t border-slate-100">
+        <button id="btnCancelOcr" class="px-4 py-2 border border-slate-300 rounded-lg text-xs font-semibold text-slate-700 hover:bg-slate-50 transition">Cancel</button>
+        <button id="btnCommitOcr" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-xs font-semibold shadow-sm transition">Auto-Reconcile into Inventory</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- In-Page Modal: Bed Detail & Discharge Trigger -->
+  <div id="modalBed" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-100 space-y-4">
+      <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+        <h3 id="modalBedTitle" class="font-bold text-base text-slate-900">Bed Status</h3>
+        <button id="btnCloseModalBed" class="text-slate-400 hover:text-slate-600 p-1">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+        </button>
+      </div>
+
+      <div id="modalBedContent" class="space-y-3 text-xs">
+        <!-- Injected via JS -->
+      </div>
+
+      <div class="flex items-center justify-end space-x-2 pt-2 border-t border-slate-100">
+        <button id="btnToggleBedStatus" class="w-full py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-semibold shadow-sm transition">Toggle Bed Status</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="bg-white border-t border-slate-200 mt-auto py-3">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-500">
+      <div>
+        <strong>ArogyaSync AI</strong> | Google for Developers & Hack2Skill PromptWars x VELONX 2026
+      </div>
+      <div class="mt-1 sm:mt-0 flex items-center space-x-3">
+        <span>ABDM Compliant</span>
+        <span>•</span>
+        <span>e-Aushadhi Mesh v3.1</span>
+        <span>•</span>
+        <span>Location: Gwalior, MP</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Application Logic -->
+  <script>
+    // In-memory reactive state
+    const state = {
+      activeTab: 'inventory',
+      inventory: [
+        { id: 1, name: 'Anti-Snake Venom (Polyvalent)', form: 'Vial 10ml', stock: 2, burn: 1.5, runwayDays: 1.3, status: 'critical', alert: 'Urgent stock-out' },
+        { id: 2, name: 'Ciprofloxacin 500mg', form: 'Strip of 10 Tab', stock: 15, burn: 8.0, runwayDays: 1.9, status: 'critical', alert: 'Below safety buffer' },
+        { id: 3, name: 'Paracetamol 500mg', form: 'Box of 100 Tab', stock: 450, burn: 85.0, runwayDays: 5.3, status: 'warning', alert: 'Dengue seasonal spike' },
+        { id: 4, name: 'Oral Rehydration Salts (ORS)', form: 'Sachet 21.8g', stock: 180, burn: 25.0, runwayDays: 7.2, status: 'normal', alert: 'Adequate' },
+        { id: 5, name: 'Amoxicillin 250mg DT', form: 'Strip of 10 Tab', stock: 320, burn: 30.0, runwayDays: 10.6, status: 'normal', alert: 'Adequate' },
+        { id: 6, name: 'Iron & Folic Acid (IFA)', form: 'Strip of 100 Tab', stock: 600, burn: 40.0, runwayDays: 15.0, status: 'normal', alert: 'Adequate' },
+        { id: 7, name: 'Insulin Regular (Human)', form: 'Vial 40IU/ml', stock: 12, burn: 2.2, runwayDays: 5.4, status: 'warning', alert: 'Cold chain verified' }
+      ],
+      queue: [
+        { token: 'E-01', name: 'Mahesh Kumar', age: '52 M', symptoms: 'Severe retrosternal chest pain radiating to left arm with diaphoresis', priority: 'Emergency', doctor: 'Dr. Saurabh Mishra (Room 1)', wait: '0m (Immediate)', code: 'P1' },
+        { token: 'A-02', name: 'Gita Devi', age: '34 F', symptoms: '3 din se tez bukhar (103°F) aur sans phool rahi hai', priority: 'Acute', doctor: 'Dr. Saurabh Mishra (Room 1)', wait: '8m', code: 'P2' },
+        { token: 'A-03', name: 'Ramesh Singh', age: '61 M', symptoms: 'Chronic obstructive cough with purulent sputum, SpO2 93%', priority: 'Acute', doctor: 'Dr. Saurabh Mishra (Room 1)', wait: '15m', code: 'P2' },
+        { token: 'R-04', name: 'Sunita Bai', age: '27 F', symptoms: 'Third trimester antenatal checkup, BP 120/80', priority: 'Routine', doctor: 'Dr. Priya Sharma (Tele-Pool)', wait: '22m', code: 'P3' },
+        { token: 'R-05', name: 'Anil Yadav', age: '45 M', symptoms: 'Monthly Diabetes & Hypertension medication refill', priority: 'Routine', doctor: 'Dr. Priya Sharma (Tele-Pool)', wait: '30m', code: 'P3' }
+      ],
+      beds: [
+        { id: 1, label: 'Bed 01', type: 'Normal', status: 'occupied', patient: 'Kalyan Singh (65M, Typhoid)', admission: '16-Oct' },
+        { id: 2, label: 'Bed 02', type: 'Oxygen', status: 'occupied', patient: 'Smt. Bhagwati (70F, COPD)', admission: '17-Oct' },
+        { id: 3, label: 'Bed 03', type: 'Normal', status: 'available', patient: null, admission: null },
+        { id: 4, label: 'Bed 04', type: 'Oxygen', status: 'occupied', patient: 'Suresh Verma (54M, Severe Asthmatic Bronchospasm)', admission: 'Today' },
+        { id: 5, label: 'Bed 05', type: 'Normal', status: 'available', patient: null, admission: null },
+        { id: 6, label: 'Bed 06', type: 'Normal', status: 'occupied', patient: 'Anita Bai (23F, Post-partum Observation)', admission: 'Today' },
+        { id: 7, label: 'Bed 07', type: 'Normal', status: 'available', patient: null, admission: null },
+        { id: 8, label: 'Bed 08', type: 'Normal', status: 'occupied', patient: 'Dharmendra (38M, Snakebite recovery)', admission: '16-Oct' },
+        { id: 9, label: 'Bed 09', type: 'Oxygen', status: 'available', patient: null, admission: null },
+        { id: 10, label: 'Bed 10', type: 'Normal', status: 'occupied', patient: 'Om Prakash (49M, Acute Gastroenteritis)', admission: 'Today' }
+      ],
+      selectedBedId: null,
+      charts: {}
+    };
+
+    // Helper: Toast message
+    function showToast(message, type = 'info') {
+      const container = document.getElementById('toastContainer');
+      const toast = document.createElement('div');
+      const colors = {
+        success: 'bg-emerald-600 text-white',
+        error: 'bg-rose-600 text-white',
+        warning: 'bg-amber-500 text-white',
+        info: 'bg-slate-900 text-white'
+      };
+      toast.className = `${colors[type] || colors.info} px-4 py-3 rounded-xl shadow-lg text-xs font-semibold flex items-center space-x-2 transition-all duration-300 pointer-events-auto transform translate-y-2 opacity-0`;
+      toast.innerHTML = `
+        <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+        <span>${message}</span>
+      `;
+      container.appendChild(toast);
+      setTimeout(() => {
+        toast.classList.remove('translate-y-2', 'opacity-0');
+      }, 10);
+      setTimeout(() => {
+        toast.classList.add('opacity-0', 'translate-y-2');
+        setTimeout(() => toast.remove(), 300);
+      }, 3500);
+    }
+
+    // Render Inventory Table
+    function renderInventory() {
+      const tbody = document.getElementById('inventoryTableBody');
+      const filter = document.getElementById('stockFilter').value;
+      let criticalCount = 0;
+
+      const filtered = state.inventory.filter(item => {
+        if (item.status === 'critical') criticalCount++;
+        if (filter === 'critical') return item.status === 'critical';
+        if (filter === 'warning') return item.status === 'critical' || item.status === 'warning';
+        return true;
+      });
+
+      tbody.innerHTML = '';
+      filtered.forEach(item => {
+        const tr = document.createElement('tr');
+        tr.className = 'hover:bg-slate-50/80 transition';
+        
+        let statusBadge = '';
+        if (item.status === 'critical') {
+          statusBadge = '<span class="bg-rose-100 text-rose-800 px-2 py-0.5 rounded-full text-[11px] font-bold">Critical</span>';
+        } else if (item.status === 'warning') {
+          statusBadge = '<span class="bg-amber-100 text-amber-800 px-2 py-0.5 rounded-full text-[11px] font-bold">Low Buffer</span>';
+        } else {
+          statusBadge = '<span class="bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full text-[11px] font-bold">Normal</span>';
+        }
+
+        tr.innerHTML = `
+          <td class="py-3 px-4 font-semibold text-slate-900">
+            <div>${item.name}</div>
+            <div class="text-[11px] text-slate-400 font-normal">${item.form}</div>
+          </td>
+          <td class="py-3 px-3 font-mono font-bold ${item.status === 'critical' ? 'text-rose-600' : 'text-slate-800'}">${item.stock}</td>
+          <td class="py-3 px-3 text-slate-600">${item.burn} / day</td>
+          <td class="py-3 px-3 font-bold ${item.status === 'critical' ? 'text-rose-600' : (item.status === 'warning' ? 'text-amber-600' : 'text-emerald-600')}">
+            ${item.runwayDays.toFixed(1)} Days
+          </td>
+          <td class="py-3 px-3">${statusBadge}</td>
+          <td class="py-3 px-4 text-right">
+            ${item.status === 'critical' ? 
+              `<button data-action="transfer" data-id="${item.id}" class="btn-item-transfer px-2.5 py-1 bg-rose-50 text-rose-700 hover:bg-rose-100 border border-rose-200 rounded font-bold text-[11px] transition">Rebalance</button>` :
+              `<span class="text-slate-400 text-[11px]">Synced</span>`}
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+      // Update counters
+      document.getElementById('badgeStockWarning').textContent = `${criticalCount} Critical`;
+      document.getElementById('kpiCriticalStock').textContent = `${criticalCount} Items`;
+      document.getElementById('stockCountText').textContent = `${state.inventory.length} Tracked Drugs`;
+
+      // Attach button listeners
+      document.querySelectorAll('.btn-item-transfer').forEach(btn => {
+        btn.addEventListener('click', () => {
+          document.getElementById('modalTransfer').classList.remove('hidden');
+        });
+      });
+    }
+
+    // Render OPD Queue Table
+    function renderQueue() {
+      const tbody = document.getElementById('queueTableBody');
+      tbody.innerHTML = '';
+
+      state.queue.forEach((q, idx) => {
+        const tr = document.createElement('tr');
+        tr.className = 'hover:bg-slate-50 transition';
+
+        let badge = '';
+        if (q.priority === 'Emergency') {
+          badge = '<span class="bg-rose-100 text-rose-800 px-2 py-0.5 rounded text-[11px] font-bold">Emergency (P1)</span>';
+        } else if (q.priority === 'Acute') {
+          badge = '<span class="bg-amber-100 text-amber-800 px-2 py-0.5 rounded text-[11px] font-bold">Acute (P2)</span>';
+        } else {
+          badge = '<span class="bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded text-[11px] font-bold">Routine (P3)</span>';
+        }
+
+        tr.innerHTML = `
+          <td class="py-2.5 px-3 font-mono font-bold text-slate-900">${q.token}</td>
+          <td class="py-2.5 px-3">
+            <div class="font-bold text-slate-800">${q.name}</div>
+            <div class="text-[11px] text-slate-400">${q.age}</div>
+          </td>
+          <td class="py-2.5 px-3 max-w-xs truncate text-slate-600" title="${q.symptoms}">${q.symptoms}</td>
+          <td class="py-2.5 px-3">${badge}</td>
+          <td class="py-2.5 px-3 text-slate-700">${q.doctor}</td>
+          <td class="py-2.5 px-3 font-semibold text-slate-700">${q.wait}</td>
+          <td class="py-2.5 px-3 text-right">
+            <button data-token="${q.token}" class="btn-call-patient px-2 py-1 text-slate-600 hover:text-emerald-700 hover:bg-slate-100 rounded text-[11px] font-semibold transition">
+              Call In
+            </button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+      document.querySelectorAll('.btn-call-patient').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          const t = e.target.getAttribute('data-token');
+          showToast(`Calling Patient ${t} into Consulting Room`, 'info');
+        });
+      });
+    }
+
+    // Render Beds Grid
+    function renderBeds() {
+      const grid = document.getElementById('bedsGrid');
+      grid.innerHTML = '';
+      let occupiedCount = 0;
+
+      state.beds.forEach(bed => {
+        if (bed.status === 'occupied') occupiedCount++;
+        const card = document.createElement('div');
+        const isOcc = bed.status === 'occupied';
+        const isO2 = bed.type === 'Oxygen';
+
+        card.className = `p-3 rounded-xl border cursor-pointer transition transform hover:-translate-y-0.5 ${
+          isOcc ? 'bg-rose-50/70 border-rose-200' : 'bg-emerald-50/60 border-emerald-200'
+        }`;
+
+        card.innerHTML = `
+          <div class="flex items-center justify-between mb-1.5">
+            <span class="font-bold text-xs ${isOcc ? 'text-rose-900' : 'text-emerald-900'}">${bed.label}</span>
+            ${isO2 ? '<span class="text-[10px] bg-blue-100 text-blue-800 px-1.5 py-0.5 rounded font-bold">O₂</span>' : ''}
+          </div>
+          <div class="text-[11px] font-semibold ${isOcc ? 'text-rose-700' : 'text-emerald-700'}">
+            ${isOcc ? 'Occupied' : 'Vacant'}
+          </div>
+          <div class="text-[10px] text-slate-500 mt-1 truncate">
+            ${isOcc ? bed.patient.split('(')[0] : 'Ready for admit'}
+          </div>
+        `;
+
+        card.addEventListener('click', () => {
+          openBedModal(bed.id);
+        });
+
+        grid.appendChild(card);
+      });
+
+      document.getElementById('kpiBedOccupancy').textContent = `${occupiedCount} / 10 Beds`;
+    }
+
+    // Bed Modal handling
+    function openBedModal(bedId) {
+      state.selectedBedId = bedId;
+      const bed = state.beds.find(b => b.id === bedId);
+      if (!bed) return;
+
+      document.getElementById('modalBedTitle').textContent = `${bed.label} Telemetry Details (${bed.type} Bed)`;
+      const content = document.getElementById('modalBedContent');
+      
+      if (bed.status === 'occupied') {
+        content.innerHTML = `
+          <div class="p-3 rounded-lg bg-rose-50 border border-rose-200 space-y-1">
+            <div class="font-bold text-rose-900">Current Occupant: ${bed.patient}</div>
+            <div class="text-rose-700 text-xs">Admitted: ${bed.admission}</div>
+            <div class="text-rose-600 text-[11px]">Vitals: Stable | Antibiotics IV Cycle #3</div>
+          </div>
+          <p class="text-slate-600">Discharging this patient will update the district emergency referral mesh in real-time.</p>
+        `;
+        document.getElementById('btnToggleBedStatus').textContent = 'Confirm Discharge & Sanitize Bed';
+      } else {
+        content.innerHTML = `
+          <div class="p-3 rounded-lg bg-emerald-50 border border-emerald-200 space-y-1">
+            <div class="font-bold text-emerald-900">Bed is Sanitized and Ready for Admission</div>
+            <div class="text-emerald-700 text-xs">Oxygen Line: Calibrated (45 PSI)</div>
+          </div>
+          <p class="text-slate-600">Assign this vacant bed to an acute in-patient or emergency referral.</p>
+        `;
+        document.getElementById('btnToggleBedStatus').textContent = 'Admit In-Queue Patient';
+      }
+
+      document.getElementById('modalBed').classList.remove('hidden');
+    }
+
+    // Initialize Chart.js
+    function initCharts() {
+      // 1. Inventory Depletion Chart
+      const ctxInv = document.getElementById('inventoryChart').getContext('2d');
+      state.charts.inventory = new Chart(ctxInv, {
+        type: 'line',
+        data: {
+          labels: ['Day 0', 'Day 1', 'Day 2', 'Day 3', 'Day 4', 'Day 5', 'Day 6'],
+          datasets: [
+            {
+              label: 'Dengue Surge Burn (Forecast)',
+              data: [450, 365, 275, 180, 85, 0, 0],
+              borderColor: '#e11d48',
+              backgroundColor: 'rgba(225, 29, 72, 0.08)',
+              fill: true,
+              tension: 0.3,
+              borderWidth: 2
+            },
+            {
+              label: 'Baseline Consumption',
+              data: [450, 420, 390, 360, 330, 300, 270],
+              borderColor: '#059669',
+              borderDash: [5, 5],
+              tension: 0.3,
+              borderWidth: 2
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 10 } } }
+          },
+          scales: {
+            y: { beginAtZero: true, grid: { color: '#f1f5f9' }, ticks: { font: { size: 10 } } },
+            x: { grid: { display: false }, ticks: { font: { size: 10 } } }
+          }
+        }
+      });
+
+      // 2. Footfall Curve Chart
+      const ctxFoot = document.getElementById('footfallChart').getContext('2d');
+      state.charts.footfall = new Chart(ctxFoot, {
+        type: 'bar',
+        data: {
+          labels: ['08:00', '09:00', '10:00', '11:00', '12:00', '13:00', '14:00', '15:00'],
+          datasets: [
+            {
+              label: 'Patient Arrivals',
+              data: [12, 28, 45, 52, 38, 16, 10, 8],
+              backgroundColor: '#10b981',
+              borderRadius: 4
+            },
+            {
+              type: 'line',
+              label: 'Clinical Capacity Floor',
+              data: [35, 35, 35, 35, 35, 35, 35, 35],
+              borderColor: '#f59e0b',
+              borderWidth: 2,
+              borderDash: [4, 4],
+              pointRadius: 0
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 10 } } }
+          },
+          scales: {
+            y: { beginAtZero: true, grid: { color: '#f1f5f9' }, ticks: { font: { size: 10 } } },
+            x: { grid: { display: false }, ticks: { font: { size: 10 } } }
+          }
+        }
+      });
+    }
+
+    // Tab Switching Logic
+    function switchTab(tabName) {
+      state.activeTab = tabName;
+      document.querySelectorAll('.tab-view').forEach(v => v.classList.add('hidden'));
+      document.querySelectorAll('.tab-btn').forEach(b => {
+        b.classList.remove('border-emerald-600', 'text-emerald-600');
+        b.classList.add('border-transparent', 'text-slate-500');
+      });
+
+      const activeView = document.getElementById(`view-${tabName}`);
+      const activeBtn = document.getElementById(`tab-${tabName}`);
+      if (activeView) activeView.classList.remove('hidden');
+      if (activeBtn) {
+        activeBtn.classList.remove('border-transparent', 'text-slate-500');
+        activeBtn.classList.add('border-emerald-600', 'text-emerald-600');
+      }
+    }
+
+    // Event Handlers
+    document.addEventListener('DOMContentLoaded', () => {
+      // Tab click events
+      document.getElementById('tab-inventory').addEventListener('click', () => switchTab('inventory'));
+      document.getElementById('tab-triage').addEventListener('click', () => switchTab('triage'));
+      document.getElementById('tab-beds').addEventListener('click', () => switchTab('beds'));
+      document.getElementById('tab-staff').addEventListener('click', () => switchTab('staff'));
+
+      // Filter change
+      document.getElementById('stockFilter').addEventListener('change', renderInventory);
+
+      // Buttons
+      document.getElementById('btnScanRegister').addEventListener('click', () => {
+        document.getElementById('modalOcr').classList.remove('hidden');
+      });
+      document.getElementById('btnCloseModalOcr').addEventListener('click', () => {
+        document.getElementById('modalOcr').classList.add('hidden');
+      });
+      document.getElementById('btnCancelOcr').addEventListener('click', () => {
+        document.getElementById('modalOcr').classList.add('hidden');
+      });
+      document.getElementById('btnCommitOcr').addEventListener('click', () => {
+        state.inventory.forEach(i => {
+          if (i.name.includes('Amoxicillin')) {
+            i.stock += 450;
+            i.runwayDays = i.stock / i.burn;
+          }
+        });
+        document.getElementById('modalOcr').classList.add('hidden');
+        renderInventory();
+        showToast('Extracted 3 ledger rows via Gemini OCR. Inventory reconciled!', 'success');
+      });
+
+      document.getElementById('btnTriggerTransfer').addEventListener('click', () => {
+        document.getElementById('modalTransfer').classList.remove('hidden');
+      });
+      document.getElementById('btnCloseModalTransfer').addEventListener('click', () => {
+        document.getElementById('modalTransfer').classList.add('hidden');
+      });
+      document.getElementById('btnCancelTransfer').addEventListener('click', () => {
+        document.getElementById('modalTransfer').classList.add('hidden');
+      });
+      document.getElementById('btnConfirmTransfer').addEventListener('click', () => {
+        const qty = parseInt(document.getElementById('inputTransferQty').value, 10) || 15;
+        const asv = state.inventory.find(i => i.name.includes('Anti-Snake'));
+        if (asv) {
+          asv.stock += qty;
+          asv.runwayDays = asv.stock / asv.burn;
+          asv.status = asv.runwayDays > 3 ? 'normal' : 'warning';
+        }
+        document.getElementById('modalTransfer').classList.add('hidden');
+        renderInventory();
+        showToast(`Inter-facility transfer authorized: +${qty} ASV Vials en route from CHC Morar!`, 'success');
+      });
+
+      // Bed Modal
+      document.getElementById('btnCloseModalBed').addEventListener('click', () => {
+        document.getElementById('modalBed').classList.add('hidden');
+      });
+      document.getElementById('btnToggleBedStatus').addEventListener('click', () => {
+        const bed = state.beds.find(b => b.id === state.selectedBedId);
+        if (bed) {
+          if (bed.status === 'occupied') {
+            bed.status = 'available';
+            bed.patient = null;
+            bed.admission = null;
+            showToast(`${bed.label} discharged & sanitized. Available on district mesh!`, 'success');
+          } else {
+            bed.status = 'occupied';
+            bed.patient = 'Sohan Lal (42M, Observation)';
+            bed.admission = 'Today';
+            showToast(`Admitted in-queue patient to ${bed.label}!`, 'info');
+          }
+          renderBeds();
+        }
+        document.getElementById('modalBed').classList.add('hidden');
+      });
+
+      // Triage Runner
+      document.getElementById('btnRunTriage').addEventListener('click', () => {
+        const name = document.getElementById('inputPatientName').value || 'Anonymous';
+        const age = document.getElementById('inputPatientAge').value || '35';
+        const symptoms = document.getElementById('inputSymptoms').value.toLowerCase();
+        
+        let priority = 'Routine';
+        let code = 'P3';
+        let doctor = 'Dr. Priya Sharma (Tele-Pool)';
+        let wait = '25m';
+        let prefix = 'R';
+        let badgeColor = 'bg-emerald-100 text-emerald-800';
+        let reason = 'Mild / non-urgent symptoms. Routed to tele-pool for queue optimization.';
+
+        if (symptoms.includes('chest') || symptoms.includes('saans') || symptoms.includes('breath') || symptoms.includes('unconscious') || symptoms.includes('stroke')) {
+          priority = 'Emergency';
+          code = 'P1';
+          doctor = 'Dr. Saurabh Mishra (Room 1)';
+          wait = '0m (Immediate)';
+          prefix = 'E';
+          badgeColor = 'bg-rose-100 text-rose-800';
+          reason = 'Cardiorespiratory red flag detected. Prioritized to immediate emergency queue.';
+        } else if (symptoms.includes('bukhar') || symptoms.includes('fever') || symptoms.includes('pain') || symptoms.includes('vomit') || symptoms.includes('dengue')) {
+          priority = 'Acute';
+          code = 'P2';
+          doctor = 'Dr. Saurabh Mishra (Room 1)';
+          wait = '12m';
+          prefix = 'A';
+          badgeColor = 'bg-amber-100 text-amber-800';
+          reason = 'High-grade febrile presentation requiring clinical evaluation.';
+        }
+
+        const tokenNum = `${prefix}-${Math.floor(Math.random() * 80 + 10)}`;
+        state.queue.unshift({
+          token: tokenNum,
+          name,
+          age,
+          symptoms: document.getElementById('inputSymptoms').value,
+          priority,
+          doctor,
+          wait,
+          code
+        });
+
+        // Show result box
+        const resultBox = document.getElementById('triageResultBox');
+        resultBox.classList.remove('hidden');
+        const badge = document.getElementById('triageBadge');
+        badge.className = `px-2 py-0.5 rounded text-[11px] font-bold ${badgeColor}`;
+        badge.textContent = `Acuity: ${priority} (${code})`;
+        document.getElementById('tokenNumberDisplay').textContent = `Token: ${tokenNum}`;
+        document.getElementById('triageReasoning').textContent = reason;
+
+        renderQueue();
+        showToast(`Token ${tokenNum} issued for ${name} [${priority}]`, 'success');
+      });
+
+      // Sample symptom buttons
+      document.getElementById('btnSampleCritical').addEventListener('click', () => {
+        document.getElementById('inputSymptoms').value = 'Heavy chest discomfort radiating to jaw, severe sweating and shortness of breath for 40 minutes.';
+      });
+      document.getElementById('btnSampleFever').addEventListener('click', () => {
+        document.getElementById('inputSymptoms').value = '3 din se tez bukhar hai, sharir me dard hai aur ulti jaisa lag raha hai.';
+      });
+      document.getElementById('btnSampleFollowup').addEventListener('click', () => {
+        document.getElementById('inputSymptoms').value = 'Routine high blood pressure checkup and monthly amlodipine refill.';
+      });
+
+      // Referral Dispatch
+      document.getElementById('btnDispatchReferral').addEventListener('click', () => {
+        showToast('Referral dossier dispatched via ABDM. Bed #07 at CHC Morar locked!', 'success');
+      });
+
+      // Simulate doctor emergency summons
+      document.getElementById('btnSimulateAbsence').addEventListener('click', () => {
+        const badge1 = document.getElementById('docStatusBadge1');
+        const doc1 = document.getElementById('doctorCard1');
+        if (badge1.textContent.includes('Present')) {
+          badge1.className = 'px-2.5 py-1 rounded-full font-bold bg-amber-100 text-amber-800';
+          badge1.textContent = 'Summoned: Medico-Legal Duty (Off-Site)';
+          doc1.classList.add('bg-amber-50/50', 'border-amber-200');
+          showToast('Dr. Mishra summoned to District Court. OPD queue automatically re-bridged to District Tele-Pool!', 'warning');
+        } else {
+          badge1.className = 'px-2.5 py-1 rounded-full font-bold bg-emerald-100 text-emerald-800';
+          badge1.textContent = 'Present (On-Site OPD)';
+          doc1.classList.remove('bg-amber-50/50', 'border-amber-200');
+          showToast('Dr. Mishra checked in back on-site at PHC Ghatigaon.', 'success');
+        }
+      });
+
+      document.getElementById('btnLaunchTeleSession').addEventListener('click', () => {
+        showToast('Connecting next waiting patient to District Tele-Health Doctor...', 'info');
+      });
+
+      document.getElementById('btnSyncNow').addEventListener('click', () => {
+        showToast('Edge node synchronized with Central State Health Registry.', 'success');
+      });
+
+      document.getElementById('btnQuickReport').addEventListener('click', () => {
+        showToast('Daily PHC digest transmitted to Chief Medical Officer (CMO).', 'info');
+      });
+
+      document.getElementById('facilitySelect').addEventListener('change', (e) => {
+        showToast(`Switching context to ${e.target.options[e.target.selectedIndex].text}...`, 'info');
+      });
+
+      // Initial Renders
+      renderInventory();
+      renderQueue();
+      renderBeds();
+      initCharts();
+    });
+  </script>
+</body>
+</html>
